@@ -10,7 +10,9 @@ function App() {
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
     try {
-      setJson(JSON.parse(event.target.value));
+      const json = JSON.parse(event.target.value);
+      setJson(json);
+      setInput(JSON.stringify(json, undefined, 4));
       setError(null);
     } catch (error: unknown) {
       if (error instanceof SyntaxError) {
