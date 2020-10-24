@@ -1,26 +1,65 @@
-import React from "react";
-import logo from "./logo.svg";
+import React, { useState } from "react";
+import ReactJson from "react-json-view";
 import "./App.css";
 
 function App() {
+  const [input, setInput] = useState(JSON.stringify(sample));
+  const [json, setJson] = useState(sample);
+  const [error, setError] = useState<string | null>();
+
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(event.target.value);
+    try {
+      setJson(JSON.parse(event.target.value));
+      setError(null);
+    } catch (error: unknown) {
+      if (error instanceof SyntaxError) {
+        setError(error.message);
+      } else if (typeof error === "string") {
+        setError(error);
+      } else {
+        console.error(error);
+      }
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <label className="inputContainer">
+        Paste your JSON here:
+        {error && <label className="error">{`Syntax error: ${error}`}</label>}
+        <textarea value={input} onChange={handleChange} className="input" />
+      </label>
+      <label className="jsonViewer">
+        Inspect it:
+        <ReactJson src={json} />
+      </label>
     </div>
   );
 }
+
+const sample = {
+  glossary: {
+    title: "example glossary",
+    GlossDiv: {
+      title: "S",
+      GlossList: {
+        GlossEntry: {
+          ID: "SGML",
+          SortAs: "SGML",
+          GlossTerm: "Standard Generalized Markup Language",
+          Acronym: "SGML",
+          Abbrev: "ISO 8879:1986",
+          GlossDef: {
+            para:
+              "A meta-markup language, used to create markup languages such as DocBook.",
+            GlossSeeAlso: ["GML", "XML"],
+          },
+          GlossSee: "markup",
+        },
+      },
+    },
+  },
+};
 
 export default App;
